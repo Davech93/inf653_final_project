@@ -28,6 +28,18 @@ app.get('/states/', (req, res) => {
     });
   });
 
+  const getAllStates = (req, res) => {
+    let states = statesData;
+    
+    if (req.query.contig === 'true') {
+      states = states.filter(state => state.code !== 'AK' && state.code !== 'HI');
+    } else if (req.query.contig === 'false') {
+      states = states.filter(state => state.code === 'AK' || state.code === 'HI');
+    }
+    
+    res.json(states);
+  };
+
   //contiguous 48 states
 
   //non-contiguous HI & AK
@@ -51,11 +63,11 @@ app.get('/states/', (req, res) => {
     
  
 
-const getAllStates = async (req, res) => {
-    const states = await states.find();
-    if (!states) return res.status(204).json({ 'message': 'No states found.' });
-    res.json(states);
-}
+// const getAllStates = async (req, res) => {
+//     const states = await states.find();
+//     if (!states) return res.status(204).json({ 'message': 'No states found.' });
+//     res.json(states);
+// }
 
 const createNewState = async (req, res) => {
    if (!req?.body?.state){
