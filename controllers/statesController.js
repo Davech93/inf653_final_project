@@ -8,7 +8,7 @@ const app = express();
 
 
 // Define a route handler for HTTP GET request
-app.get('/data', (req, res) => {
+app.get('/states/', (req, res) => {
     // Read the JSON data from file
     fs.readFile(path.join(__dirname, 'model', 'states.json'), 'utf8', (err, data) => {
       if (err) {
