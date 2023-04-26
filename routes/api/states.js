@@ -8,8 +8,11 @@ router.route('/states')
     .put(statesController.updateState)
     .delete(statesController.deleteState);
 
-router.route('/states')
+router.route('/states/contig')
     .get(statesController.contigStates);
+
+router.route('/:code')
+    .get(statesController.getState);
 
 router.route('/:code/capital')
     .get(statesController.getCapital);

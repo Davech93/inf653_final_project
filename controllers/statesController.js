@@ -1,6 +1,5 @@
 const http = require('http');
 const States = require ('../model/States');
-const stateData = require ('../model/states.json');
 const fsPromises = require('fs').promises;
 const path = require('path');
 const express = require('express');
@@ -17,7 +16,7 @@ app.listen(3000, () => {
 });
 
 // Add the built-in query parser middleware
-app.use(express.urlencoded({ extended: true }));
+// app.use(express.urlencoded({ extended: true }));
 
   // const statesCollection = States.collection('StatesDB'); // Replace 'states' with your collection name
 
