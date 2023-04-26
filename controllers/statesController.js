@@ -1,10 +1,18 @@
+const http = require('http');
+
 const States = require ('../model/States');
+const statesData = require ('../model/states.json');
 const fsPromises = require('fs').promises;
 const path = require('path');
 
 const express = require('express');
 const fs = require('fs');
 const app = express();
+
+// Start the Express app
+app.listen(3000, () => {
+  console.log('App started on http://localhost:3500');
+});
 
 
 // Define a route handler for HTTP GET request
@@ -40,14 +48,44 @@ app.get('/states/', (req, res) => {
     res.json(states);
   };
 
+
+  const getState = async (req, res) => {
+    // if (!req?.params?.code) return res.status(400).json({ 'message': 'State ID required.'});
+    
+    // const state = await States.findOne({ code: req.params.code }).exec();
+    // if (!state) {
+    //     return res.status(204).json({ "message": `No state matches ID ${req.params.code}.` });
+    // }
+    // const searchParam = req.query.search;
+    // const state = await statesData.filter(state => state.code === searchParam); // Assumes the JSON file contains an array of objects with 'name' property
+
+    // res.json(state);
+}
+
+app.get('/states/:state', (req, res) => {
+  // Read and parse the JSON file
+  fs.readFile(path.join(__dirname, 'model', 'states.json'), 'utf8', (err, data) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send('Internal Server Error');
+    }
+
+    const jsonData = JSON.parse(data);
+
+    // Access the URL parameter using req.params
+    const searchParam = req.params.state; // Assumes the parameter is named 'state'
+
+    // Search for data in the JSON object
+    const searchResult = jsonData.filter(item => item.code === searchParam);
+
+    // Send the search result as the response
+    res.json(searchResult);
+  });
+});
   //contiguous 48 states
 
   //non-contiguous HI & AK
   
-  // Start the Express app
-  app.listen(3000, () => {
-    console.log('App started on http://localhost:3500');
-  });
 
 // const fileOps = async () => {
 //     try {
@@ -110,15 +148,6 @@ const deleteState = async (req, res) => {
     res.json(result);
 }
 
-const getState = async (req, res) => {
-    if (!req?.params?.id) return res.status(400).json({ 'message': 'State ID required.'});
-    
-    const state = await States.findOne({ _id: req.params.id }).exec();
-    if (!state) {
-        return res.status(204).json({ "message": `No state matches ID ${req.params.id}.` });
-    }
-    res.json(state);
-}
 
 module.exports = {
     getAllStates,
