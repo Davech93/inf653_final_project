@@ -1,111 +1,198 @@
 const http = require('http');
-
 const States = require ('../model/States');
-const statesData = require ('../model/states.json');
+const stateData = require ('../model/states.json');
 const fsPromises = require('fs').promises;
 const path = require('path');
-
 const express = require('express');
 const fs = require('fs');
 const app = express();
+const MongoClient = require('mongodb').MongoClient;
+
+const data = {
+  states: require('../model/states.json')
+}
 
 // Start the Express app
 app.listen(3000, () => {
   console.log('App started on http://localhost:3500');
 });
 
+// Add the built-in query parser middleware
+app.use(express.urlencoded({ extended: true }));
+
+  // const statesCollection = States.collection('StatesDB'); // Replace 'states' with your collection name
+
+  // Use map() method to create an array of state abbreviation codes
+//   const stateAbbreviations = stateData.map(state => state.stateCode);
+
+//   // Insert the state abbreviation codes into MongoDB
+//   statesCollection.insertOne({ stateCode: stateCode }, (err, result) => {
+//     if (err) throw err;
+
+//     console.log('State abbreviation codes inserted successfully');
+  
+// });
+
 
 // Define a route handler for HTTP GET request
-app.get('/states/', (req, res) => {
-    // Read the JSON data from file
-    fs.readFile(path.join(__dirname, 'model', 'states.json'), 'utf8', (err, data) => {
-      if (err) {
-        console.error(err);
-        res.status(500).send('Internal Server Error');
-        return;
-      }
-      try {
-        // Parse the JSON data
-        const jsonData = JSON.parse(data);
-        // Send the JSON data as response
-        res.json(jsonData);
-      } catch (err) {
-        console.error(err);
-        res.status(500).send('Internal Server Error');
-      }
-    });
-  });
+
 
   const getAllStates = (req, res) => {
-    let states = statesData;
-    
-    if (req.query.contig === 'true') {
-      states = states.filter(state => state.code !== 'AK' && state.code !== 'HI');
-    } else if (req.query.contig === 'false') {
-      states = states.filter(state => state.code === 'AK' || state.code === 'HI');
+ res.json(data);
+  };
+
+  // const contigStates = (req, res) => {
+  //   if ('contig' in req.query && (req.query.contig === 'true' || req.query.contig === 'false')) {
+  //     let result;
+  //     // Returns contiguous states from data.states
+  //     if (req.query.contig === 'true') {
+  //       result = data.states.filter(state => state.code !== 'AK' && state.code !== 'HI');
+  //     }
+  //     // Returns non-contiguous states from data.states
+  //     else if (req.query.contig === 'false') {
+  //       result = data.states.filter(state => state.code === 'AK' || state.code === 'HI');
+  //     }
+  //     res.json(result);
+  //   } else {
+  //     // Handle case when 'contig' query parameter is missing or has invalid value
+  //     res.status(400).json({ error: 'Invalid or missing contig parameter' });
+  //   }
+  // }
+
+  const contigStates = (req, res) => {
+    // if (!req.query.contig) {
+    //   // Return error response if 'contig' is missing
+    //   return res.status(400).json({ error: 'Missing contig parameter' });
+    // }
+    if ('contig' in req.query) {
+      if (req.query.contig === true) {
+        const contiguousStates = [];
+        data.states.forEach(state => {
+          if (state.code !== 'AK' && state.code !== 'HI') {
+            contiguousStates.push(state);
+          }
+        });
+        res.json(contiguousStates);
+      } else if (req.query.contig === false) {
+        const nonContiguousStates = [];
+        data.states.forEach(state => {
+          if (state.code === 'AK' || state.code === 'HI') {
+            nonContiguousStates.push(state);
+          }
+        });
+        res.json(nonContiguousStates);
+      } else {
+        // Handle case when 'contig' query parameter has invalid value
+        res.status(400).json({ error: 'Invalid value for contig parameter' });
+      }
+    } else {
+      // Handle case when 'contig' query parameter is missing
+      res.status(400).json({ error: 'Missing contig parameter' });
     }
-    
-    res.json(states);
   };
 
 
-  const getState = async (req, res) => {
-    // if (!req?.params?.code) return res.status(400).json({ 'message': 'State ID required.'});
-    
-    // const state = await States.findOne({ code: req.params.code }).exec();
-    // if (!state) {
-    //     return res.status(204).json({ "message": `No state matches ID ${req.params.code}.` });
-    // }
-    // const searchParam = req.query.search;
-    // const state = await statesData.filter(state => state.code === searchParam); // Assumes the JSON file contains an array of objects with 'name' property
 
-    // res.json(state);
+const getState = (req, res) => {
+  // Destructure the request parameters for better readability
+  const { code } = req.params;
+  
+  // Check if stateCode is provided in the request
+  if (!code) {
+    return res.status(400).json({ 'message': 'State code is required.' });
+  }
+  
+  // Find the state in the data array based on stateCode
+  const state = data.states.find(state => state.code === code.toUpperCase());
+  
+  // Check if state is found, and return appropriate response
+  if (!state) {
+    return res.status(400).json({ 'message': `State code ${code} not found.` });
+  }
+  
+  // Return the state as JSON response
+  res.json(state);
+};
+
+const getCapital = (req, res) => {
+  // Destructure the request parameters for better readability
+  const { code } = req.params;
+  
+  // Check if stateCode is provided in the request
+  if (!code) {
+    return res.status(400).json({ 'message': 'State code is required.' });
+  }
+  
+  // Find the state in the data array based on stateCode
+  const state = data.states.find(state => state.code === code.toUpperCase());
+if (state) {
+  const capitalCity = state.capital_city; // Access the capital city property of the state object
+  res.json({'state': state.state, 'capital': `${capitalCity}`});
+} else {
+  return res.status(400).json({ 'message': `State with code ${code} not found.`});
+}
+  
 }
 
-app.get('/states/:state', (req, res) => {
-  // Read and parse the JSON file
-  fs.readFile(path.join(__dirname, 'model', 'states.json'), 'utf8', (err, data) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).send('Internal Server Error');
-    }
-
-    const jsonData = JSON.parse(data);
-
-    // Access the URL parameter using req.params
-    const searchParam = req.params.state; // Assumes the parameter is named 'state'
-
-    // Search for data in the JSON object
-    const searchResult = jsonData.filter(item => item.code === searchParam);
-
-    // Send the search result as the response
-    res.json(searchResult);
-  });
-});
-  //contiguous 48 states
-
-  //non-contiguous HI & AK
+const getNickname = (req, res) => {
+  // Destructure the request parameters for better readability
+  const { code } = req.params;
   
-
-// const fileOps = async () => {
-//     try {
-//         const data = await fsPromises.readFile(path.join(__dirname, 'model', 'states.js'), 'utf8');
-//         console.log(data);
-//         await fsPromises.writeFile()
-//     } catch (err) {
-//         console.error(err);
-//     }
-// }
+  // Check if stateCode is provided in the request
+  if (!code) {
+    return res.status(400).json({ 'message': 'State code is required.' });
+  }
   
-// fileOps();
-    
- 
-
-// const getAllStates = async (req, res) => {
-//     const states = await states.find();
-//     if (!states) return res.status(204).json({ 'message': 'No states found.' });
-//     res.json(states);
-// }
+  // Find the state in the data array based on stateCode
+  const state = data.states.find(state => state.code === code.toUpperCase());
+if (state) {
+  const nickname = state.nickname; // Access the capital city property of the state object
+  res.json({'state': state.state, 'nickname': `${nickname}`});
+} else {
+  return res.status(400).json({ 'message': `State with code ${code} not found.`});
+}
+  
+}
+const getPopulation = (req, res) => {
+  // Destructure the request parameters for better readability
+  const { code } = req.params;
+  
+  // Check if stateCode is provided in the request
+  if (!code) {
+    return res.status(400).json({ 'message': 'State code is required.' });
+  }
+  
+  // Find the state in the data array based on stateCode
+  const state = data.states.find(state => state.code === code.toUpperCase());
+if (state) {
+  const population = state.population; // Access the capital city property of the state object
+  res.json({'state': state.state, 'population': parseInt(`${population}`)});
+} else {
+  return res.status(400).json({ 'message': `State with code ${code} not found.`});
+}
+  
+}
+const getAdmission = (req, res) => {
+  // Destructure the request parameters for better readability
+  const { code } = req.params;
+  
+  // Check if stateCode is provided in the request
+  if (!code) {
+    return res.status(400).json({ 'message': 'State code is required.' });
+  }
+  
+  // Find the state in the data array based on stateCode
+  const state = data.states.find(state => state.code === code.toUpperCase());
+if (state) {
+  const admission = state.admission_date; // Access the capital city property of the state object
+  res.json({'state': state.state, 'admitted': `${admission}`});
+} else {
+  return res.status(400).json({ 'message': `State with code ${code} not found.`});
+}
+  
+}
+  
+  
 
 const createNewState = async (req, res) => {
    if (!req?.body?.state){
@@ -151,6 +238,11 @@ const deleteState = async (req, res) => {
 
 module.exports = {
     getAllStates,
+    getCapital,
+    getPopulation,
+    getNickname,
+    getAdmission,
+    contigStates,
     createNewState,
     updateState,
     deleteState,
