@@ -10,7 +10,7 @@ const errorHandler = require('./middleware/errorHandler');
 const credentials = require('./middleware/credentials');
 const mongoose = require('mongoose');
 const connectDB = require('./config/dbConn');
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3500;
 
 app.get('/states/', (req, res) => {
     res.sendFile(path.join(__dirname, 'model', 'states.json'));
