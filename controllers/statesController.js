@@ -6,11 +6,10 @@ const path = require('path');
 const express = require('express');
 const fs = require('fs');
 const app = express();
-const MongoClient = require('mongodb').MongoClient;
 
 const data = {
   states: require('../model/states.json')
-}
+};
 
 // Start the Express app
 app.listen(3000, () => {

@@ -23,6 +23,5 @@ router.route('/:code/population')
 router.route('/:code/admission')
     .get(statesController.getAdmission);
 
-router.use(express.query());
 
 module.exports = router;
