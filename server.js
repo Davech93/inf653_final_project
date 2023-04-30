@@ -12,9 +12,11 @@ const mongoose = require('mongoose');
 const connectDB = require('./config/dbConn');
 const PORT = process.env.PORT || 3500;
 
-app.get('/states/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'model', 'states.json'));
-});
+
+// app.get('/states/', (req, res) => {
+//     res.sendFile(path.join(__dirname, 'model', 'states.json'));
+// });
+
 
 // Connect to MongoDB
 connectDB();
@@ -43,6 +45,7 @@ app.use('/', express.static(path.join(__dirname, '/public')));
 app.use('/', require('./routes/root'));
 
 app.use('/states', require('./routes/api/states'));
+
 
 app.all('*', (req, res) => {
     res.status(404);

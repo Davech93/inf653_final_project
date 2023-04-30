@@ -1,0 +1,10 @@
+20230430	01:14:27	492db5fc-0d04-4f3f-acd6-ab5649c0ebdc	SyntaxError: Expected property name or '}' in JSON at position 2
+20230430	01:16:04	9877fc84-fd8d-45ce-97e3-7405b05e4bc3	SyntaxError: Expected property name or '}' in JSON at position 2
+20230430	01:16:11	aad9f4c3-0b48-4570-8520-6d6be4a8a3c3	SyntaxError: Expected property name or '}' in JSON at position 2
+20230430	01:19:30	2ec36f55-5162-4bb2-a5e5-b9df2618ad4f	SyntaxError: Expected property name or '}' in JSON at position 2
+20230430	01:19:57	495d6a09-a016-402a-84a7-6f206324ac26	SyntaxError: Unexpected token ''', "['funfact':"... is not valid JSON
+20230430	01:20:08	e9c648f6-d838-4880-a9f9-5ee93ed24d78	SyntaxError: Expected property name or '}' in JSON at position 1
+20230430	01:22:00	ec09b9d7-cd24-46b4-9ec9-c1d668b7165e	SyntaxError: Expected property name or '}' in JSON at position 1
+20230430	02:58:56	8fd36f07-c84b-45b2-b10b-a700520ba910	SyntaxError: Expected property name or '}' in JSON at position 1
+20230430	02:59:04	7045151c-0c7c-42ac-afb6-983f8ec84516	SyntaxError: Expected property name or '}' in JSON at position 1
+20230430	02:59:22	de832697-7531-4650-8db5-11540cbec465	SyntaxError: Expected property name or '}' in JSON at position 1

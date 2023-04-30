@@ -5,95 +5,76 @@ const path = require('path');
 const express = require('express');
 const fs = require('fs');
 const app = express();
+const mongoose = require('mongoose');
+
 
 const data = {
   states: require('../model/states.json')
 };
 
-// Start the Express app
-app.listen(3000, () => {
-  console.log('App started on http://localhost:3500');
-});
+const qs = require('qs');
 
-// Add the built-in query parser middleware
-// app.use(express.urlencoded({ extended: true }));
+// const getAllStates = async (req, res) => {
+//   let states = data.states;
+//   if ('contig' in query) {
+//         const isContig = Boolean(query.contig);
+//         const filteredStates = data.states.filter(state => {
+//           if (isContig) {
+//             return state.code !== 'AK' && state.code !== 'HI';
+//           } else {
+//             return state.code === 'AK' || state.code === 'HI';
+//           }
+//         });
+    
+//         res.json(filteredStates);
+//       } else {
+//         res.json(data.states);
+//       }
 
-  // const statesCollection = States.collection('StatesDB'); // Replace 'states' with your collection name
+//   for (const state of states) {
+//     const foundState = await States.findOne({ stateCode: state.code }).exec();
+//     if (foundState && foundState.funfacts) {
+//       state.funfacts = foundState.funfacts;
+//     }
+//   }
 
-  // Use map() method to create an array of state abbreviation codes
-//   const stateAbbreviations = stateData.map(state => state.stateCode);
-
-//   // Insert the state abbreviation codes into MongoDB
-//   statesCollection.insertOne({ stateCode: stateCode }, (err, result) => {
-//     if (err) throw err;
-
-//     console.log('State abbreviation codes inserted successfully');
-  
-// });
+//   res.json(states);
+// };
 
 
-// Define a route handler for HTTP GET request
+const getAllStates = async (req, res) => {
+  const query = req.query;
+  let states = data.states;
 
-
-  const getAllStates = (req, res) => {
- res.json(data);
-  };
-
-  // const contigStates = (req, res) => {
-  //   if ('contig' in req.query && (req.query.contig === 'true' || req.query.contig === 'false')) {
-  //     let result;
-  //     // Returns contiguous states from data.states
-  //     if (req.query.contig === 'true') {
-  //       result = data.states.filter(state => state.code !== 'AK' && state.code !== 'HI');
-  //     }
-  //     // Returns non-contiguous states from data.states
-  //     else if (req.query.contig === 'false') {
-  //       result = data.states.filter(state => state.code === 'AK' || state.code === 'HI');
-  //     }
-  //     res.json(result);
-  //   } else {
-  //     // Handle case when 'contig' query parameter is missing or has invalid value
-  //     res.status(400).json({ error: 'Invalid or missing contig parameter' });
-  //   }
-  // }
-
-  const contigStates = (req, res) => {
-    // if (!req.query.contig) {
-    //   // Return error response if 'contig' is missing
-    //   return res.status(400).json({ error: 'Missing contig parameter' });
-    // }
-    if ('contig' in req.query) {
-      if (req.query.contig === true) {
-        const contiguousStates = [];
-        data.states.forEach(state => {
-          if (state.code !== 'AK' && state.code !== 'HI') {
-            contiguousStates.push(state);
-          }
-        });
-        res.json(contiguousStates);
-      } else if (req.query.contig === false) {
-        const nonContiguousStates = [];
-        data.states.forEach(state => {
-          if (state.code === 'AK' || state.code === 'HI') {
-            nonContiguousStates.push(state);
-          }
-        });
-        res.json(nonContiguousStates);
+  if ('contig' in query) {
+    const isContig = Boolean(query.contig);
+    const filteredStates = states.filter(state => {
+      if (isContig) {
+        return state.code !== 'AK' && state.code !== 'HI';
       } else {
-        // Handle case when 'contig' query parameter has invalid value
-        res.status(400).json({ error: 'Invalid value for contig parameter' });
+        return state.code === 'AK' || state.code === 'HI';
       }
-    } else {
-      // Handle case when 'contig' query parameter is missing
-      res.status(400).json({ error: 'Missing contig parameter' });
+    });
+
+    states = filteredStates;
+  }
+
+  for (const state of data.states) {
+    const foundState = await States.findOne({ stateCode: state.code }).exec();
+    if (foundState && foundState.funfacts) {
+      state.funfacts = foundState.funfacts;
     }
-  };
+  }
+
+  res.json(states);
+};
 
 
 
-const getState = (req, res) => {
+const getState = async (req, res) => {
   // Destructure the request parameters for better readability
-  const { code } = req.params;
+  const code = req.params.code.toUpperCase();
+
   
   // Check if stateCode is provided in the request
   if (!code) {
@@ -107,12 +88,162 @@ const getState = (req, res) => {
   if (!state) {
     return res.status(400).json({ 'message': `State code ${code} not found.` });
   }
-  
+
+  // Fetch the funfacts from MongoDB collection based on state code
+  const funfacts = await States.find({ stateCode: code });
+
+  // Attach the funfacts to the state object
+  state.funfacts = funfacts.map(f => f.funfacts);
+
   // Return the state as JSON response
   res.json(state);
 };
 
-const getCapital = (req, res) => {
+
+const getfunfact = async (req, res) => {
+
+  const code = req.params.stateCode.toUpperCase();
+  const state = await States.findOne({ stateCode: code }).exec();
+  if (!state) {
+    // handle case where state with given stateCode was not found
+    return res.status(404).json({ 'message': 'State not found' });
+  }
+  const funfactIndex = Math.floor(Math.random() * state.funfacts.length);
+  if (funfactIndex === -1) {
+    // handle case where state does not have a funfact that includes the stateCode
+    return res.status(404).json({ 'message': 'Funfact not found for state' });
+  }
+  const funfact = state.funfacts[funfactIndex];
+  res.json({ funfact });
+  
+}
+
+const postfunfact = async (req, res) => {
+  const code = req.params.stateCode.toUpperCase();
+  
+  const funfacts = req.body.funfacts;
+
+  // Verify that the "funfacts" property exists in the request body and is an array
+  if (!Array.isArray(funfacts)) {
+    return res.status(400).json({ message: 'Fun facts must be provided as an array' });
+  }
+
+  try {
+    // Find the requested state in the database
+    const state = await States.findOne({ stateCode: code }).exec();
+
+    // If the state is not found, return a 404 error response
+    if (!state) {
+      return res.status(404).json({ message: `State ${code} not found` });
+    }
+
+    // If the state already has some fun facts, add the new fun facts to them
+    if (state.funfacts && state.funfacts.length > 0) {
+      state.funfacts.push(...funfacts);
+    }
+    // If the state does not have any pre-existing fun facts, create a new record in the database
+    else {
+      state.funfacts = funfacts;
+    }
+
+    // Save the updated state in the database
+    await state.save();
+
+    res.status(201).json({ message: `Fun facts added to state ${code}` });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+const patchfunfact = async (req, res) => {
+  const code = req.params.stateCode.toUpperCase();
+  
+  const funfacts = req.body.funfacts;
+
+  const { index, funfact } = req.body;
+
+  // Check if index and funfact are provided
+  if (!index || !funfact) {
+    return res.status(400).json({ message: 'Index and Funfact are required.' });
+  }
+
+  // Find the state by state code
+  const foundState = await States.findOne({ stateCode: code }).exec();
+  if (!foundState) {
+    return res.status(404).json({ message: 'State not found.' });
+  }
+
+  // Check if the index is valid
+  if (index < 1 || index > foundState.funfacts.length) {
+    return res.status(400).json({ message: 'Invalid index.' });
+  }
+
+  // Update the fun fact at the specified index
+  foundState.funfacts[index - 1] = funfact;
+
+  // Save the updated record
+  const updatedState = await foundState.save();
+
+  res.status(200).json(updatedState);
+};
+
+const deletefunfact = async (req, res) => {
+
+  const code = req.params.stateCode.toUpperCase();
+  
+  const { index } = req.body;
+
+  // Check if index and funfact are provided
+  if (!index) {
+    return res.status(400).json({ message: 'Index is required.' });
+  }
+
+  // Find the state by state code
+  const foundState = await States.findOne({ stateCode: code }).exec();
+  if (!foundState) {
+    return res.status(404).json({ message: 'State not found.' });
+  }
+
+  // Check if the index is valid
+  if (index < 1 || index > foundState.funfacts.length) {
+    return res.status(400).json({ message: 'Invalid index.' });
+  }
+
+   // Remove the fun fact at the specified index
+  foundState.funfacts = foundState.funfacts.filter((_, i) => i !== index - 1);
+
+  // Save the updated record
+  const updatedState = await foundState.save();
+
+  res.status(200).json(updatedState);
+  
+};
+
+
+// const contigStates = (req, res) => {
+//   console.log('hello');
+//   const query = qs.parse(req.query);
+
+//   if ('contig' in query) {
+//     const isContig = Boolean(query.contig);
+//     const filteredStates = data.states.filter(state => {
+//       if (isContig) {
+//         return state.code !== 'AK' && state.code !== 'HI';
+//       } else {
+//         return state.code === 'AK' || state.code === 'HI';
+//       }
+//     });
+
+//     res.json(filteredStates);
+//   } else {
+//     res.json(data.states);
+//   }
+// };
+  
+
+
+const getCapital = async (req, res) => {
   // Destructure the request parameters for better readability
   const { code } = req.params;
   
@@ -121,16 +252,26 @@ const getCapital = (req, res) => {
     return res.status(400).json({ 'message': 'State code is required.' });
   }
   
-  // Find the state in the data array based on stateCode
-  const state = data.states.find(state => state.code === code.toUpperCase());
-if (state) {
-  const capitalCity = state.capital_city; // Access the capital city property of the state object
-  res.json({'state': state.state, 'capital': `${capitalCity}`});
-} else {
-  return res.status(400).json({ 'message': `State with code ${code} not found.`});
-}
-  
-}
+  try {
+    // Find the state in the data array based on stateCode
+    const state = data.states.find(state => state.code === code.toUpperCase());
+    
+    if (!state) {
+      return res.status(400).json({ 'message': `State with code ${code} not found.`});
+    }
+    
+    // Retrieve fun facts for the state from MongoDB
+    const facts = await FunFacts.findOne({ code: code });
+    
+    // Return the state and capital city, and fun facts as JSON response
+    res.json({ 'state': state.state, 'capital': state.capital_city, 'funfacts': facts });
+    
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ 'message': 'Internal server error.' });
+  }
+};
+
 
 const getNickname = (req, res) => {
   // Destructure the request parameters for better readability
@@ -192,46 +333,18 @@ if (state) {
   
   
 
-const createNewState = async (req, res) => {
-   if (!req?.body?.state){
-    return res.status(400).json({ 'message': 'State name is required'});
-   }
 
-   try {
-    const result = await States.create({
-        state: req.body.state
-    });
 
-    res.status(201).json(result);
-   } catch (err){
-    console.error(err);
-   }
-}
+// const deleteState = async (req, res) => {
+//     // if (!req?.body?.id) return res.status(400).json({ 'message': 'State ID required.'});
 
-const updateState = async (req, res) => {
-    if (!req?.body?.id){
-        return res.status(400).json({ 'message': 'ID parameter is required'});
-    }
-
-    const state = await States.findOne({ _id: req.body.id }).exec();
-    if (!state) {
-        return res.status(204).json({ "message": `No state matches ID ${req.body.id}.` });
-    }
-    if (req.body?.state) state.firstname = req.body.state;
-    const result = await state.save();
-    res.json(result);
-}
-
-const deleteState = async (req, res) => {
-    if (!req?.body?.id) return res.status(400).json({ 'message': 'State ID required.'});
-
-    const state = await States.findOne({ _id: req.body.id }).exec();
-    if (!state) {
-        return res.status(204).json({ "message": `No employee matches ID ${req.body.id}.` });
-    }
-    const result = await state.deleteOne({ _id: req.body.id });
-    res.json(result);
-}
+//     // const state = await States.findOne({ _id: req.body.id }).exec();
+//     // if (!state) {
+//     //     return res.status(204).json({ "message": `No employee matches ID ${req.body.id}.` });
+//     // }
+//     // const result = await state.deleteOne({ _id: req.body.id });
+//     // res.json(result);
+// }
 
 
 module.exports = {
@@ -240,9 +353,13 @@ module.exports = {
     getPopulation,
     getNickname,
     getAdmission,
-    contigStates,
-    createNewState,
-    updateState,
-    deleteState,
+    getfunfact,
+    postfunfact,
+    patchfunfact,
+    deletefunfact,
+    // contigStates,
+    // createNewState,
+    // updateState,
+    // deleteState,
     getState
 }
