@@ -278,7 +278,7 @@ const getCapital = async (req, res) => {
     const state = data.states.find(state => state.code === code.toUpperCase());
     
     if (!state) {
-      return res.status(400).json({ 'message': `State with code ${code} not found.`});
+      return res.status(400).json({ 'message': 'Invalid state abbreviation parameter'});
     }
     
     // Retrieve fun facts for the state from MongoDB
@@ -347,7 +347,7 @@ if (state) {
   const admission = state.admission_date; // Access the capital city property of the state object
   res.json({'state': state.state, 'admitted': `${admission}`});
 } else {
-  return res.status(400).json({ 'message': `State with code ${code} not found.`});
+  return res.status(400).json({ 'message': `Invalid state abbreviation parameter`});
 }
   
 }
