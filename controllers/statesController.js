@@ -124,7 +124,7 @@ const getfunfact = async (req, res) => {
 
   if (!state) {
     // handle case where state with given stateCode was not found
-    return res.status(404).json({ 'message': `No funfacts found for ${name2.state}` });
+    return res.status(404).json({ 'message': `No Fun Facts found for ${name2.state}` });
   }
 
   const funfactIndex = Math.floor(Math.random() * state.funfacts.length);
