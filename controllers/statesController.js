@@ -147,57 +147,43 @@ const getfunfact = async (req, res) => {
   
 }
 
-// const postfunfact = async (req, res) => {
-//   const code = req.params.stateCode.toUpperCase();
-  
-//   const funfacts = req.body.funfacts;
-//   // const code2 = req.params.code.toUpperCase();
+const postfunfact = async (req, res) => {
+  const code = req.params.stateCode.toUpperCase();
+  const funfacts = req.body.funfacts;
 
+  if(!funfacts) {
+    return res.json({ 'message': 'State fun facts value required' });
+  }
 
-//   if(!funfacts){
-//     return res.json({ 'message': 'State fun facts value required' });
-//   }
+  if(!Array.isArray(funfacts)) {
+    return res.status(400).json({ message: 'State fun facts value must be an array' });
+  }
 
-//   // Verify that the "funfacts" property exists in the request body and is an array
-//   if (!Array.isArray(funfacts)) {
-//     return res.status(400).json({ message: 'State fun facts value must be an array' });
-//   }
+  try {
+    // Find the requested state in the database
+    let state = await States.findOne({ stateCode: code }).exec();
 
-//   try {
-//     // Find the requested state in the database
-//     const state = await States.findOne({ stateCode: code }).exec();
-//      // Find the state in the data array based on stateCode
-//   const state2 = data.states.find(state => state.code === code);
-//     // If the state is not found, return a 404 error response
-//     if (!state2) {
-//       return res.status(404).json({ message: `State ${code} not found` });
-//     } else {
-//       state.funfacts = funfacts;
-//     }
+    // If the state is not found, create a new record in the database
+    if(!state) {
+      state = new States({ stateCode: code, funfacts });
+      await state.save();
+    } 
+    // If the state is found, update its funfacts array with the new funfacts
+    else {
+      if(!state.funfacts || state.funfacts.length === 0) {
+        state.funfacts = funfacts;
+      } else {
+        state.funfacts.push(...funfacts);
+      }
+      await state.save();
+    }
 
-
-//     // if (state2 && !state){
-//     //   state.funfacts = funfacts;
-//     // }
-//     // If the state already has some fun facts, add the new fun facts to them
-//     if (state.funfacts && state.funfacts.length > 0) {
-//       state.funfacts.push(...funfacts);
-//     }
-//     // If the state does not have any pre-existing fun facts, create a new record in the database
-//     else {
-//       const newState = new States({ stateCode: code, funfacts });
-//       await newState.save();
-//     }
-
-//     // Save the updated state in the database
-//     await state.save();
-
-//     res.status(201).json({ message: `Fun facts added to state ${code}` });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ message: 'Server error' });
-//   }
-// };
+    res.status(201).json({ message: `Fun facts added to state ${code}` });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
 
 // const postfunfact = async (req, res) => {
 //   const code = req.params.stateCode.toUpperCase();
@@ -218,13 +204,14 @@ const getfunfact = async (req, res) => {
 //     // If the state is not found, create a new record in the database
 //     if(!state) {
 //       state = new States({ stateCode: code, funfacts });
-//       await state.save();
 //     } 
 //     // If the state is found, update its funfacts array with the new funfacts
 //     else {
 //       state.funfacts = state.funfacts ? [...state.funfacts, ...funfacts] : funfacts;
-//       await state.save();
 //     }
+    
+//     // Save the updated state in the database
+//     await state.save();
 
 //     res.status(201).json({ message: `Fun facts added to state ${code}` });
 //   } catch (err) {
@@ -232,41 +219,6 @@ const getfunfact = async (req, res) => {
 //     res.status(500).json({ message: 'Server error' });
 //   }
 // };
-
-const postfunfact = async (req, res) => {
-  const code = req.params.stateCode.toUpperCase();
-  const funfacts = req.body.funfacts;
-
-  if(!funfacts) {
-    return res.json({ 'message': 'State fun facts value required' });
-  }
-
-  if(!Array.isArray(funfacts)) {
-    return res.status(400).json({ message: 'State fun facts value must be an array' });
-  }
-
-  try {
-    // Find the requested state in the database
-    let state = await States.findOne({ stateCode: code }).exec();
-
-    // If the state is not found, create a new record in the database
-    if(!state) {
-      state = new States({ stateCode: code, funfacts });
-    } 
-    // If the state is found, update its funfacts array with the new funfacts
-    else {
-      state.funfacts = state.funfacts ? [...state.funfacts, ...funfacts] : funfacts;
-    }
-    
-    // Save the updated state in the database
-    await state.save();
-
-    res.status(201).json({ message: `Fun facts added to state ${code}` });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Server error' });
-  }
-};
 
 const patchfunfact = async (req, res) => {
   const code = req.params.stateCode.toUpperCase();
