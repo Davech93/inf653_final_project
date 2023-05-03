@@ -128,11 +128,11 @@ const getfunfact = async (req, res) => {
   }
 
   const funfactIndex = Math.floor(Math.random() * state.funfacts.length);
-  if (funfactIndex === -1) {
-    // handle case where state does not have a funfact that includes the stateCode
-    return res.status(404).json({ 'message': `No funfacts found for ${name.state}` });
-    // return res.status(404).json({ 'message': 'Invalid state abbreviation parameter' });
-  }
+  // if (funfactIndex === -1) {
+  //   // handle case where state does not have a funfact that includes the stateCode
+  //   return res.status(404).json({ 'message': `No funfacts found for ${name.state}` });
+  //   // return res.status(404).json({ 'message': 'Invalid state abbreviation parameter' });
+  // }
  
   const funfact = state.funfacts[funfactIndex];
   res.json({ funfact });
