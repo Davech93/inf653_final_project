@@ -230,23 +230,25 @@ const patchfunfact = async (req, res) => {
 const deletefunfact = async (req, res) => {
 
   const code = req.params.stateCode.toUpperCase();
-  
+  const name = data.states.find(state => state.code === code);
+
+
   const { index } = req.body;
 
   // Check if index and funfact are provided
   if (!index) {
-    return res.status(400).json({ message: 'Index is required.' });
+    return res.status(400).json({ message: 'State fun fact index value required' });
   }
 
   // Find the state by state code
   const foundState = await States.findOne({ stateCode: code }).exec();
   if (!foundState) {
-    return res.status(404).json({ message: 'State not found.' });
+    return res.status(404).json({ message: `No Fun Facts found for ${name.state}` });
   }
 
   // Check if the index is valid
   if (index < 1 || index > foundState.funfacts.length) {
-    return res.status(400).json({ message: 'Invalid index.' });
+    return res.status(400).json({ message: `No Fun Facts found for ${name.state}` });
   }
 
    // Remove the fun fact at the specified index
