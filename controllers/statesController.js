@@ -203,7 +203,7 @@ const patchfunfact = async (req, res) => {
     return res.status(400).json({ 'message': 'State fun fact value required' });
   }
   if(!index){
-    return res.status(400).json({'message': 'State fun fact index required'});
+    return res.status(400).json({'message': 'State fun fact index value required'});
   }
 
   // Find the state by state code
@@ -223,7 +223,8 @@ const patchfunfact = async (req, res) => {
   // Save the updated record
   const updatedState = await foundState.save();
 
-  res.status(200).json(updatedState);
+  // res.status(200).json(updatedState);
+  res.status(201).json({ stateCode: foundState.stateCode, funfacts: foundState.funfacts });
 };
 
 const deletefunfact = async (req, res) => {
