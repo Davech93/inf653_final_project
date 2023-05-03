@@ -178,7 +178,10 @@ const postfunfact = async (req, res) => {
       await state.save();
     }
 
-    res.status(201).json({ message: `Fun facts added to state ${code}` });
+    // Retrieve the updated state from the database
+    state = await States.findOne({ stateCode: code }).exec();
+
+    res.status(201).json({ stateCode: state.stateCode, funfacts: state.funfacts });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Server error' });
