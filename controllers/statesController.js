@@ -74,6 +74,7 @@ const getAllStates = async (req, res) => {
 const getState = async (req, res) => {
   // Destructure the request parameters for better readability
   const code = req.params.code.toUpperCase();
+  const states = data.states;
 
   
   // Check if stateCode is provided in the request
@@ -83,6 +84,7 @@ const getState = async (req, res) => {
   
   // Find the state in the data array based on stateCode
   const state = data.states.find(state => state.code === code.toUpperCase());
+ 
   
   // Check if state is found, and return appropriate response
   if (!state) {
@@ -91,12 +93,18 @@ const getState = async (req, res) => {
 
   // Fetch the funfacts from MongoDB collection based on state code
   const funfacts = await States.find({ stateCode: code });
+ 
 
-  if(funfacts){
-// Attach the funfacts to the state object
-state.funfacts = funfacts.map(f => f.funfacts);
-  } 
-
+//   if(funfacts){
+// // Attach the funfacts to the state object
+// state.funfacts = funfacts.map(f => f.funfacts);
+  // } 
+  for (const state of data.states) {
+    const foundState = await States.findOne({ stateCode: state.code }).exec();
+    if (foundState && foundState.funfacts) {
+      state.funfacts = foundState.funfacts;
+    }
+  }
   
 
   // Return the state as JSON response
