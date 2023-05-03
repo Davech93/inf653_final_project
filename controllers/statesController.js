@@ -151,6 +151,8 @@ const postfunfact = async (req, res) => {
   const code = req.params.stateCode.toUpperCase();
   
   const funfacts = req.body.funfacts;
+  // const code2 = req.params.code.toUpperCase();
+
 
   if(!funfacts){
     return res.json({ 'message': 'State fun facts value required' });
@@ -164,12 +166,17 @@ const postfunfact = async (req, res) => {
   try {
     // Find the requested state in the database
     const state = await States.findOne({ stateCode: code }).exec();
-
+     // Find the state in the data array based on stateCode
+  const state2 = data.states.find(state => state.code === code);
     // If the state is not found, return a 404 error response
-    if (!state) {
+    if (!state2) {
       return res.status(404).json({ message: `State ${code} not found` });
     }
 
+
+    if (state2 && !state){
+      state.funfacts = funfacts;
+    }
     // If the state already has some fun facts, add the new fun facts to them
     if (state.funfacts && state.funfacts.length > 0) {
       state.funfacts.push(...funfacts);
