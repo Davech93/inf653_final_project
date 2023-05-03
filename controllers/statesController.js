@@ -126,7 +126,7 @@ const getfunfact = async (req, res) => {
   
   
   // Check if state is found, and return appropriate response
-  if (!state) {
+  if (!name) {
     return res.status(400).json({ 'message': 'Invalid state abbreviation parameter' });
   }
 
@@ -209,12 +209,12 @@ const patchfunfact = async (req, res) => {
   // Find the state by state code
   const foundState = await States.findOne({ stateCode: code }).exec();
   if (!foundState) {
-    return res.status(404).json({ message: 'State not found.' });
+    return res.status(404).json({ message: `No Fun Facts found for ${name.state}` });
   }
 
   // Check if the index is valid
   if (index < 1 || index > foundState.funfacts.length) {
-    return res.status(400).json({ 'message': `No fun fact found at that index for ${name.state}` });
+    return res.status(400).json({ 'message': `No Fun Fact found at that index for ${name.state}` });
   }
 
   // Update the fun fact at the specified index
