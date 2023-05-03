@@ -1,0 +1,10 @@
+20230502	23:05:38	2b8288e3-944d-4bf0-85a8-4f14206232ac	GET	undefined	/states/GA/capital
+20230502	23:05:40	9c4dae51-bf6c-4f92-8d65-76bcb178ce52	GET	undefined	/states/GA/capital
+20230502	23:05:48	4bc6d47e-f091-4846-84dc-7c1e0d903eb3	GET	undefined	/states/oh/capital
+20230502	23:05:51	f3c7d5b3-2ea1-4f3f-b6d6-69b6d656bb92	GET	undefined	/states/nj/capital
+20230502	23:06:37	0aa72d06-3964-4213-8653-8d0eabc1566d	GET	undefined	/states/nj/capital
+20230502	23:06:46	5954482c-05fa-45de-a442-5d46a17196ea	GET	undefined	/states/nj/capital
+20230502	23:08:35	743eb0f1-1152-41e1-930c-8cbcf238fe70	GET	undefined	/states/nj/capital
+20230502	23:08:42	4cb219d4-43db-4488-8ac3-d9b98e02c285	GET	undefined	/states/nj
+20230502	23:10:06	98ce0eb7-0d6a-46e4-b3c5-47d5fd929e39	GET	undefined	/states/nj/nickname
+20230502	23:10:09	473a61e3-5ef5-436f-87bd-5fd28d7aa87f	GET	undefined	/states/njj/nickname

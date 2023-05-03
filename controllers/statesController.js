@@ -282,10 +282,10 @@ const getCapital = async (req, res) => {
     }
     
     // Retrieve fun facts for the state from MongoDB
-    const facts = await FunFacts.findOne({ code: code });
+    const facts = await States.findOne({ code: code });
     
     // Return the state and capital city, and fun facts as JSON response
-    res.json({ 'state': state.state, 'capital': state.capital_city, 'funfacts': facts });
+    res.json({ 'state': state.state, 'capital': state.capital_city });
     
   } catch (err) {
     console.error(err);
@@ -309,7 +309,7 @@ if (state) {
   const nickname = state.nickname; // Access the capital city property of the state object
   res.json({'state': state.state, 'nickname': `${nickname}`});
 } else {
-  return res.status(400).json({ 'message': `State with code ${code} not found.`});
+  return res.status(400).json({ 'message': `Invalid state abbreviation parameter`});
 }
   
 }
