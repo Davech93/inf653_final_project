@@ -86,18 +86,16 @@ const getState = async (req, res) => {
   
   // Check if state is found, and return appropriate response
   if (!state) {
-    return res.status(400).json({ 'message': `State code ${code} not found.` });
+    return res.status(400).json({ 'message': 'Invalid state abbreviation parameter' });
   }
 
   // Fetch the funfacts from MongoDB collection based on state code
   const funfacts = await States.find({ stateCode: code });
 
-  if(!funfacts){
-
-  } else {
+  if(funfacts){
 // Attach the funfacts to the state object
 state.funfacts = funfacts.map(f => f.funfacts);
-  }
+  } 
 
   
 
