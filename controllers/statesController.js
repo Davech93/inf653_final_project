@@ -112,7 +112,7 @@ const getfunfact = async (req, res) => {
   const state = await States.findOne({ stateCode: code }).exec();
   const name = data.states.find(state => state.code === code2);
   const name2 = data.states.find(state => state.code === code);
-  console.log(name);
+  
   
   
   const state2 = data.states.find(state => state.code === code.toUpperCase());
