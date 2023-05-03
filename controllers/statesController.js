@@ -92,8 +92,14 @@ const getState = async (req, res) => {
   // Fetch the funfacts from MongoDB collection based on state code
   const funfacts = await States.find({ stateCode: code });
 
-  // Attach the funfacts to the state object
-  state.funfacts = funfacts.map(f => f.funfacts);
+  if(!funfacts){
+
+  } else {
+// Attach the funfacts to the state object
+state.funfacts = funfacts.map(f => f.funfacts);
+  }
+
+  
 
   // Return the state as JSON response
   res.json(state);
