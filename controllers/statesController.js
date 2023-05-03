@@ -326,9 +326,9 @@ const getPopulation = (req, res) => {
   const state = data.states.find(state => state.code === code.toUpperCase());
 if (state) {
   const population = state.population; // Access the capital city property of the state object
-  res.json({'state': state.state, 'population': parseInt(`${population}`)});
+  res.json({'state': state.state, 'population': `${population.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`});
 } else {
-  return res.status(400).json({ 'message': `State with code ${code} not found.`});
+  return res.status(400).json({ 'message': 'Invalid state abbreviation parameter'});
 }
   
 }
