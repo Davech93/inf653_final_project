@@ -152,9 +152,13 @@ const postfunfact = async (req, res) => {
   
   const funfacts = req.body.funfacts;
 
+  if(!funfacts){
+    return res.json({ 'message': 'State fun facts value required' });
+  }
+
   // Verify that the "funfacts" property exists in the request body and is an array
   if (!Array.isArray(funfacts)) {
-    return res.status(400).json({ message: 'Fun facts must be provided as an array' });
+    return res.status(400).json({ message: 'State fun facts value must be an array' });
   }
 
   try {
