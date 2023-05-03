@@ -115,24 +115,24 @@ const getState = async (req, res) => {
 const getfunfact = async (req, res) => {
 
   const code = req.params.stateCode.toUpperCase();
-  const code2 = req.params.code;
+  
 
   const state = await States.findOne({ stateCode: code }).exec();
-  const name = data.states.find(state => state.code === code2);
-  const name2 = data.states.find(state => state.code === code);
+  const name = data.states.find(state => state.code === code);
   
   
   
-  const state2 = data.states.find(state => state.code === code.toUpperCase());
+  
+  
   
   // Check if state is found, and return appropriate response
-  if (!state2) {
+  if (!state) {
     return res.status(400).json({ 'message': 'Invalid state abbreviation parameter' });
   }
 
   if (!state) {
     // handle case where state with given stateCode was not found
-    return res.status(404).json({ 'message': `No Fun Facts found for ${name2.state}` });
+    return res.status(404).json({ 'message': `No Fun Facts found for ${name.state}` });
   }
 
   const funfactIndex = Math.floor(Math.random() * state.funfacts.length);
@@ -188,51 +188,22 @@ const postfunfact = async (req, res) => {
   }
 };
 
-// const postfunfact = async (req, res) => {
-//   const code = req.params.stateCode.toUpperCase();
-//   const funfacts = req.body.funfacts;
-
-//   if(!funfacts) {
-//     return res.json({ 'message': 'State fun facts value required' });
-//   }
-
-//   if(!Array.isArray(funfacts)) {
-//     return res.status(400).json({ message: 'State fun facts value must be an array' });
-//   }
-
-//   try {
-//     // Find the requested state in the database
-//     let state = await States.findOne({ stateCode: code }).exec();
-
-//     // If the state is not found, create a new record in the database
-//     if(!state) {
-//       state = new States({ stateCode: code, funfacts });
-//     } 
-//     // If the state is found, update its funfacts array with the new funfacts
-//     else {
-//       state.funfacts = state.funfacts ? [...state.funfacts, ...funfacts] : funfacts;
-//     }
-    
-//     // Save the updated state in the database
-//     await state.save();
-
-//     res.status(201).json({ message: `Fun facts added to state ${code}` });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ message: 'Server error' });
-//   }
-// };
 
 const patchfunfact = async (req, res) => {
   const code = req.params.stateCode.toUpperCase();
+  const name = data.states.find(state => state.code === code);
+
   
   const funfacts = req.body.funfacts;
 
   const { index, funfact } = req.body;
 
   // Check if index and funfact are provided
-  if (!index || !funfact) {
-    return res.status(400).json({ message: 'Index and Funfact are required.' });
+  if (!funfact) {
+    return res.status(400).json({ 'message': 'State fun fact value required' });
+  }
+  if(!index){
+    return res.status(400).json({'message': 'State fun fact index required'});
   }
 
   // Find the state by state code
@@ -243,7 +214,7 @@ const patchfunfact = async (req, res) => {
 
   // Check if the index is valid
   if (index < 1 || index > foundState.funfacts.length) {
-    return res.status(400).json({ message: 'Invalid index.' });
+    return res.status(400).json({ 'message': `No fun fact found at that index for ${name.state}` });
   }
 
   // Update the fun fact at the specified index
