@@ -108,14 +108,16 @@ const getfunfact = async (req, res) => {
 
   const code = req.params.stateCode.toUpperCase();
   const state = await States.findOne({ stateCode: code }).exec();
+  const name = data.states.find(state => state.code === code.toUpperCase());
+  
   if (!state) {
     // handle case where state with given stateCode was not found
-    return res.status(404).json({ 'message': 'State not found' });
+    return res.status(404).json({ 'message': 'Invalid state abbreviation parameter' });
   }
   const funfactIndex = Math.floor(Math.random() * state.funfacts.length);
   if (funfactIndex === -1) {
     // handle case where state does not have a funfact that includes the stateCode
-    return res.status(404).json({ 'message': 'Funfact not found for state' });
+    return res.status(404).json({ 'message': `No funfacts found for ${name.state}` });
   }
   const funfact = state.funfacts[funfactIndex];
   res.json({ funfact });
