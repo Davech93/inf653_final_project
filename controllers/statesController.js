@@ -83,7 +83,7 @@ const getState = async (req, res) => {
   }
   
   // Find the state in the data array based on stateCode
-  const state = data.states.find(state => state.code === code.toUpperCase());
+  const state = data.states.find(state => state.code === code);
  
   
   // Check if state is found, and return appropriate response
