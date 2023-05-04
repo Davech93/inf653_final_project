@@ -261,12 +261,12 @@ const patchfunfact = async (req, res) => {
   const foundState = await States.findOne({ stateCode: code }).exec();
 
   if (!foundState || foundState.funfacts.length === 0) {
-    return res.status(404).json({ message: `No Fun Facts found for ${state.name}` });
+    return res.status(404).json({ message: `No Fun Facts found for ${state.state}` });
   }
 
   // Check if the index is within the range of fun facts for the state
   if (index > foundState.funfacts.length) {
-    return res.status(400).json({ message: `No Fun Fact found at that index for ${state.name}` });
+    return res.status(400).json({ message: `No Fun Fact found at that index for ${state.state}` });
   }
 
   // Update the fun fact at the specified index
@@ -278,9 +278,7 @@ const patchfunfact = async (req, res) => {
   // Return the updated state object
   res.status(200).json({
     stateCode: updatedState.stateCode,
-    name: state.name,
-    funfacts: updatedState.funfacts,
-    message: `Fun fact ${index} updated for ${state.name}`
+    funfacts: updatedState.funfacts
   });
 };
 
