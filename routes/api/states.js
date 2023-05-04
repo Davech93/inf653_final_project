@@ -3,6 +3,8 @@ const express = require('express');
 const router = express.Router();
 const statesController = require('../../controllers/statesController');
 
+
+
 router.use((req, res, next) => {
     req.query = qs.parse(req.querystring);
     next();

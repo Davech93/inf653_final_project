@@ -15,6 +15,7 @@ const data = {
 const qs = require('qs');
 
 // const getAllStates = async (req, res) => {
+//   const query = req.query;
 //   let states = data.states;
 //   if ('contig' in query) {
 //         const isContig = Boolean(query.contig);
@@ -68,6 +69,7 @@ const getAllStates = async (req, res) => {
 
   res.json(states);
 };
+
 
 
 
