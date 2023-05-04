@@ -6,6 +6,8 @@ const express = require('express');
 const fs = require('fs');
 const app = express();
 const mongoose = require('mongoose');
+mongoose.set('strictQuery', false);
+
 
 
 const data = {

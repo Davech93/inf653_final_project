@@ -10,6 +10,8 @@ const errorHandler = require('./middleware/errorHandler');
 const credentials = require('./middleware/credentials');
 const mongoose = require('mongoose');
 const connectDB = require('./config/dbConn');
+mongoose.set('strictQuery', false);
+
 const PORT = process.env.PORT || 3500;
 
 // app.use(cors({
