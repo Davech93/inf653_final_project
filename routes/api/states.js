@@ -19,7 +19,8 @@ router.param('contig', function(req, res, next, contig) {
 //   router.get('/', statesController.contigStates);
 
 
-  router.get('/', statesController.getAllStates);
+  router.route('/') 
+    .get(statesController.getAllStates);
 
 
 router.route('/:code')
