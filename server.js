@@ -12,11 +12,11 @@ const mongoose = require('mongoose');
 const connectDB = require('./config/dbConn');
 const PORT = process.env.PORT || 3500;
 
-app.use(cors({
-    origin: 'https://dazzling-snickerdoodle-777101.netlify.app',
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-  }));
-  
+// app.use(cors({
+//     origin: 'https://dazzling-snickerdoodle-777101.netlify.app',
+//     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+//   }));
+
 // app.get('/states/', (req, res) => {
 //     res.sendFile(path.join(__dirname, 'model', 'states.json'));
 // });
