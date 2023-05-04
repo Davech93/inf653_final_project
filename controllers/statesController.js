@@ -43,23 +43,23 @@ const qs = require('qs');
 
 
 const getAllStates = async (req, res) => {
-  const query = req.query;
+  // const query = req.query;
   let states = data.states;
 
-  if ('contig' in query) {
-    const isContig = Boolean(query.contig);
-    const filteredStates = states.filter(state => {
-      if (isContig) {
-        return state.code !== 'AK' && state.code !== 'HI';
-      } else {
-        return state.code === 'AK' || state.code === 'HI';
-      }
-    });
+  // if ('contig' in query) {
+  //   const isContig = Boolean(query.contig);
+  //   const filteredStates = states.filter(state => {
+  //     if (isContig) {
+  //       return state.code !== 'AK' && state.code !== 'HI';
+  //     } else {
+  //       return state.code === 'AK' || state.code === 'HI';
+  //     }
+  //   });
 
-    states = filteredStates;
-  }
+  //   states = filteredStates;
+  // }
 
-  for (const state of data.states) {
+  for (const state of states) {
     const foundState = await States.findOne({ stateCode: state.code }).exec();
     if (foundState && foundState.funfacts) {
       state.funfacts = foundState.funfacts;
@@ -91,14 +91,14 @@ const getState = async (req, res) => {
     return res.status(400).json({ 'message': 'Invalid state abbreviation parameter' });
   }
 
-  // Fetch the funfacts from MongoDB collection based on state code
-  const funfacts = await States.find({ stateCode: code });
+  // // Fetch the funfacts from MongoDB collection based on state code
+  // const funfacts = await States.find({ stateCode: code });
  
 
 //   if(funfacts){
 // // Attach the funfacts to the state object
 // state.funfacts = funfacts.map(f => f.funfacts);
-  // } 
+//   } 
   for (const state of data.states) {
     const foundState = await States.findOne({ stateCode: state.code }).exec();
     if (foundState && foundState.funfacts) {
