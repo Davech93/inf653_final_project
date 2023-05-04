@@ -19,11 +19,11 @@ router.param('contig', function(req, res, next, contig) {
 //   router.get('/', statesController.contigStates);
 
 
-  router.route('/') 
+  router.route('/state') 
     .get(statesController.getAllStates);
 
 
-router.route('/:code')
+router.route('/state/:code')
     .get(statesController.getState);
 
 router.route('/:stateCode/funfact')
