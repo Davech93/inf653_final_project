@@ -46,20 +46,20 @@ const qs = require('qs');
 
 
 const getAllStates = async (req, res) => {
-  const { contig } = req.query;
-  console.log({ contig });
+  // const { contig } = req.query;
+  // console.log({ contig });
   let states = data.states;
 
-  const isContig = contig === 'true';
-  const filteredStates = states.filter(state => {
-    if (isContig) {
-      return state.code !== 'AK' && state.code !== 'HI';
-    } else {
-      return state.code === 'AK' || state.code === 'HI';
-    }
-  });
+  // const isContig = contig === 'true';
+  // const filteredStates = states.filter(state => {
+  //   if (isContig) {
+  //     return state.code !== 'AK' && state.code !== 'HI';
+  //   } else {
+  //     return state.code === 'AK' || state.code === 'HI';
+  //   }
+  // });
 
-  states = filteredStates;
+  // states = filteredStates;
 
   for (let state of states) {
     const foundState = await States.findOne({ stateCode: state.code }, 'funfacts').lean().exec();
