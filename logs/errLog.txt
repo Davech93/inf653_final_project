@@ -1,4 +1,0 @@
-20230504	06:19:39	2f90ebc7-0fcb-4489-8c7d-f9abaf3b1fe5	SyntaxError: Unexpected token ',', ..." "index": ,
-  "funfa"... is not valid JSON
-20230504	06:20:15	3cd2621d-4587-4fbd-ae2b-3928027ceeb9	SyntaxError: Unexpected token 'h', ..."funfact": hi
-}" is not valid JSON
