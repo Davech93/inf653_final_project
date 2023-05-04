@@ -76,7 +76,7 @@ const getAllStates = async (req, res) => {
 const getState = async (req, res) => {
   // Destructure the request parameters for better readability
   const code = req.params.code.toUpperCase();
-  const states = data.states;
+  // const states = data.states;
 
   
   // Check if stateCode is provided in the request
@@ -191,32 +191,83 @@ const postfunfact = async (req, res) => {
 };
 
 
-const patchfunfact = async (req, res) => {
-  const code = req.params.stateCode.toUpperCase();
-  const name = data.states.find(state => state.code === code);
+// const patchfunfact = async (req, res) => {
+//   const code = req.params.stateCode.toUpperCase();
+//   const name = data.states.find(state => state.code === code);
 
   
-  const funfacts = req.body.funfacts;
+//   // const funfacts = req.body.funfacts;
+
+//   const { index, funfact } = req.body;
+
+//   // Check if index and funfact are provided
+//   if (!funfact) {
+//     return res.status(400).json({ 'message': 'State fun fact value required' });
+//   }
+//   if(!index){
+//     return res.status(400).json({'message': 'State fun fact index value required'});
+//   }
+
+//   // Find the state by state code
+//   const foundState = await States.findOne({ stateCode: code }).exec();
+//   if (!foundState) {
+//     return res.status(404).json({ message: `No Fun Facts found for ${name.state}` });
+//   }
+
+//   // Check if the index is valid
+//   if (index < 1 || index > foundState.funfacts.length) {
+//     return res.status(400).json({ 'message': `No Fun Fact found at that index for ${name.state}` });
+//   }
+
+//   // Update the fun fact at the specified index
+//   foundState.funfacts[index - 1] = funfact;
+
+//   // Save the updated record
+//   const updatedState = await foundState.save();
+
+//   // res.status(200).json(updatedState);
+//   res.status(201).json({ stateCode: foundState.stateCode, funfacts: foundState.funfacts });
+// };
+
+
+const patchfunfact = async (req, res) => {
+  const code = req.params.stateCode.toUpperCase();
+
+  // Check if the `states` array exists
+  if (!data.states) {
+    return res.status(404).json({ 'message': 'No states found' });
+  }
+
+  // Find the state object by state code
+  const state = data.states.find(s => s.code === code);
+
+  // Check if a state was found
+  if (!state) {
+    return res.status(404).json({ 'message': `No Fun Facts found for ${req.params.stateCode}` });
+  }
 
   const { index, funfact } = req.body;
 
-  // Check if index and funfact are provided
+  // Check if `funfact` is provided
   if (!funfact) {
     return res.status(400).json({ 'message': 'State fun fact value required' });
   }
-  if(!index){
-    return res.status(400).json({'message': 'State fun fact index value required'});
+
+  // Check if `index` is provided and is a positive integer
+  if (!index || index < 1 || !Number.isInteger(index)) {
+    return res.status(400).json({ 'message': 'State fun fact index value required' });
   }
 
-  // Find the state by state code
+  // Find the state by state code in the database
   const foundState = await States.findOne({ stateCode: code }).exec();
+
   if (!foundState) {
-    return res.status(404).json({ message: `No Fun Facts found for ${name.state}` });
+    return res.status(404).json({ 'message': `No Fun Facts found for ${state.name}` });
   }
 
-  // Check if the index is valid
-  if (index < 1 || index > foundState.funfacts.length) {
-    return res.status(400).json({ 'message': `No Fun Fact found at that index for ${name.state}` });
+  // Check if the index is within the range of fun facts for the state
+  if (index > foundState.funfacts.length) {
+    return res.status(400).json({ 'message': `No Fun Fact found at that index for ${state.name}` });
   }
 
   // Update the fun fact at the specified index
@@ -225,8 +276,8 @@ const patchfunfact = async (req, res) => {
   // Save the updated record
   const updatedState = await foundState.save();
 
-  // res.status(200).json(updatedState);
-  res.status(201).json({ stateCode: foundState.stateCode, funfacts: foundState.funfacts });
+  // Return the updated state object
+  res.status(200).json({ 'stateCode': foundState.stateCode, 'funfacts': foundState.funfacts });
 };
 
 const deletefunfact = async (req, res) => {
