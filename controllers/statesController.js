@@ -18,48 +18,22 @@ const data = {
 // const qs = require('qs');
 
 
-
-// const getAllStates = async (req, res) => {
-//   const { contig } = req.query;
-//   console.log({ contig });
-//   let states = data.states;
-
-//   const isContig = contig === 'true';
-//   const filteredStates = states.filter(state => {
-//     if (isContig) {
-//       return state.code !== 'AK' && state.code !== 'HI';
-//     } else {
-//       return state.code === 'AK' || state.code === 'HI';
-//     }
-//   });
-
-//   states = filteredStates;
-
-//   for (let state of states) {
-//     const foundState = await States.findOne({ stateCode: state.code }, 'funfacts').lean().exec();
-//     if (foundState && foundState.funfacts) {
-//       state.funfacts = foundState.funfacts;
-//     }
-//   }
-
-//   res.json(states);
-// };
-
 const getAllStates = async (req, res) => {
-
-  const urlParts = url.parse(req.url, true);
-  const { contig } = urlParts.query;
+  const searchParams = new URLSearchParams(req.url.split('?')[1]);
+  const contig = searchParams.get('contig');
   console.log({ contig });
   let states = data.states;
   
 
-  const isContig = contig === 'true' || contig === true;
   const filteredStates = states.filter(state => {
-    if (isContig) {
+    if (contig === 'true') {
       return state.code !== 'AK' && state.code !== 'HI';
-    } else {
+    } else if (contig === 'false') {
       return state.code === 'AK' || state.code === 'HI';
     }
+    // If no contig parameter is provided or its value is not 'true' or 'false',
+    // include all states in the response
+    return true;
   });
 
   states = filteredStates;
