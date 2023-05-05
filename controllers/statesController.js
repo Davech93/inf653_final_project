@@ -5,6 +5,7 @@ const path = require('path');
 const express = require('express');
 const fs = require('fs');
 const app = express();
+const url = require('url');
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', false);
 
@@ -14,28 +15,28 @@ const data = {
   states: require('../model/states.json')
 };
 
-const qs = require('qs');
+// const qs = require('qs');
+
+
 
 // const getAllStates = async (req, res) => {
-//   const query = req.query;
+//   const { contig } = req.query;
+//   console.log({ contig });
 //   let states = data.states;
-//   if ('contig' in query) {
-//         const isContig = Boolean(query.contig);
-//         const filteredStates = data.states.filter(state => {
-//           if (isContig) {
-//             return state.code !== 'AK' && state.code !== 'HI';
-//           } else {
-//             return state.code === 'AK' || state.code === 'HI';
-//           }
-//         });
-    
-//         res.json(filteredStates);
-//       } else {
-//         res.json(data.states);
-//       }
 
-//   for (const state of states) {
-//     const foundState = await States.findOne({ stateCode: state.code }).exec();
+//   const isContig = contig === 'true';
+//   const filteredStates = states.filter(state => {
+//     if (isContig) {
+//       return state.code !== 'AK' && state.code !== 'HI';
+//     } else {
+//       return state.code === 'AK' || state.code === 'HI';
+//     }
+//   });
+
+//   states = filteredStates;
+
+//   for (let state of states) {
+//     const foundState = await States.findOne({ stateCode: state.code }, 'funfacts').lean().exec();
 //     if (foundState && foundState.funfacts) {
 //       state.funfacts = foundState.funfacts;
 //     }
@@ -44,22 +45,24 @@ const qs = require('qs');
 //   res.json(states);
 // };
 
-
 const getAllStates = async (req, res) => {
-  // const { contig } = req.query;
-  // console.log({ contig });
+
+  const urlParts = url.parse(req.url, true);
+  const { contig } = urlParts.query;
+  console.log({ contig });
   let states = data.states;
+  
 
-  // const isContig = contig === 'true';
-  // const filteredStates = states.filter(state => {
-  //   if (isContig) {
-  //     return state.code !== 'AK' && state.code !== 'HI';
-  //   } else {
-  //     return state.code === 'AK' || state.code === 'HI';
-  //   }
-  // });
+  const isContig = contig === 'true' || contig === true;
+  const filteredStates = states.filter(state => {
+    if (isContig) {
+      return state.code !== 'AK' && state.code !== 'HI';
+    } else {
+      return state.code === 'AK' || state.code === 'HI';
+    }
+  });
 
-  // states = filteredStates;
+  states = filteredStates;
 
   for (let state of states) {
     const foundState = await States.findOne({ stateCode: state.code }, 'funfacts').lean().exec();
@@ -70,7 +73,6 @@ const getAllStates = async (req, res) => {
 
   res.json(states);
 };
-
 
 
 
@@ -192,43 +194,6 @@ const postfunfact = async (req, res) => {
 };
 
 
-// const patchfunfact = async (req, res) => {
-//   const code = req.params.stateCode.toUpperCase();
-//   const name = data.states.find(state => state.code === code);
-
-  
-//   // const funfacts = req.body.funfacts;
-
-//   const { index, funfact } = req.body;
-
-//   // Check if index and funfact are provided
-//   if (!funfact) {
-//     return res.status(400).json({ 'message': 'State fun fact value required' });
-//   }
-//   if(!index){
-//     return res.status(400).json({'message': 'State fun fact index value required'});
-//   }
-
-//   // Find the state by state code
-//   const foundState = await States.findOne({ stateCode: code }).exec();
-//   if (!foundState) {
-//     return res.status(404).json({ message: `No Fun Facts found for ${name.state}` });
-//   }
-
-//   // Check if the index is valid
-//   if (index < 1 || index > foundState.funfacts.length) {
-//     return res.status(400).json({ 'message': `No Fun Fact found at that index for ${name.state}` });
-//   }
-
-//   // Update the fun fact at the specified index
-//   foundState.funfacts[index - 1] = funfact;
-
-//   // Save the updated record
-//   const updatedState = await foundState.save();
-
-//   // res.status(200).json(updatedState);
-//   res.status(201).json({ stateCode: foundState.stateCode, funfacts: foundState.funfacts });
-// };
 
 
 const patchfunfact = async (req, res) => {
@@ -317,26 +282,6 @@ const deletefunfact = async (req, res) => {
   
 };
 
-
-// const contigStates = (req, res) => {
-//   console.log('hello');
-//   const query = qs.parse(req.query);
-
-//   if ('contig' in query) {
-//     const isContig = Boolean(query.contig);
-//     const filteredStates = data.states.filter(state => {
-//       if (isContig) {
-//         return state.code !== 'AK' && state.code !== 'HI';
-//       } else {
-//         return state.code === 'AK' || state.code === 'HI';
-//       }
-//     });
-
-//     res.json(filteredStates);
-//   } else {
-//     res.json(data.states);
-//   }
-// };
   
 
 
@@ -432,18 +377,6 @@ if (state) {
 
 
 
-// const deleteState = async (req, res) => {
-//     // if (!req?.body?.id) return res.status(400).json({ 'message': 'State ID required.'});
-
-//     // const state = await States.findOne({ _id: req.body.id }).exec();
-//     // if (!state) {
-//     //     return res.status(204).json({ "message": `No employee matches ID ${req.body.id}.` });
-//     // }
-//     // const result = await state.deleteOne({ _id: req.body.id });
-//     // res.json(result);
-// }
-
-
 module.exports = {
     getAllStates,
     getCapital,
@@ -454,9 +387,5 @@ module.exports = {
     postfunfact,
     patchfunfact,
     deletefunfact,
-    // contigStates,
-    // createNewState,
-    // updateState,
-    // deleteState,
     getState
 }
