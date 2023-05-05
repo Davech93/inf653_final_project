@@ -247,7 +247,7 @@ const deletefunfact = async (req, res) => {
 
   // Check if the index is valid
   if (index < 1 || index > foundState.funfacts.length) {
-    return res.status(400).json({ message: `No Fun Facts found at that index for ${name.state}` });
+    return res.status(400).json({ message: `No Fun Fact found at that index for ${name.state}` });
   }
 
    // Remove the fun fact at the specified index
