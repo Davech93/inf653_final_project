@@ -43,34 +43,6 @@ const getAllStates = async (req, res) => {
   res.json(states);
 };
 
-// const getState = async (req, res) => {
-//   const code = req.params.code.toUpperCase();
-//   // const states = data.states;
-
-  
-//   // Check if stateCode is provided in the request
-//   if (!code) {
-//     return res.status(400).json({ 'message': 'State code is required.' });
-//   }
-  
-//   // Find the state in the data array based on state code
-//   const state = data.states.find(state => state.code === code);
- 
-  
-//   // Check if state is found, and return appropriate response
-//   if (!state) {
-//     return res.status(400).json({ 'message': 'Invalid state abbreviation parameter' });
-//   }
-
-//   for (const state of data.states) {
-//     const foundState = await States.findOne({ stateCode: state.code }).exec();
-//     if (foundState && foundState.funfacts) {
-//       state.funfacts = foundState.funfacts;
-//     }
-//   }
-  // Return the state as JSON response
-//   res.json(state);
-// };
 
   const getState = async (req, res) => {
     // Destructure the request parameters for better readability
@@ -98,10 +70,6 @@ if (facts && facts.funfacts) {
   response = { ...response, funfacts: facts.funfacts };
 }
 
-console.log(response);
-      
-      // Return the state and capital city, and fun facts as JSON response
-      // res.json({ 'state': state.state, 'capital': state.capital_city });
       res.json(response);
       
     } catch (err) {
