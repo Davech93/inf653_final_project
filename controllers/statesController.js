@@ -219,6 +219,8 @@ const patchfunfact = async (req, res) => {
 
   // Return the updated state object
   res.status(200).json({
+    state: state.state,
+    _id: updatedState._id, 
     stateCode: updatedState.stateCode,
     funfacts: updatedState.funfacts
   });
