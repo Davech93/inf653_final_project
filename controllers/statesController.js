@@ -129,6 +129,8 @@ const getfunfact = async (req, res) => {
 const postfunfact = async (req, res) => {
   const code = req.params.stateCode.toUpperCase();
   const funfacts = req.body.funfacts;
+  const stateName = data.states.find(s => s.code === code);
+
 
   if(!funfacts) {
     return res.json({ 'message': 'State fun facts value required' });
@@ -160,7 +162,7 @@ const postfunfact = async (req, res) => {
     // Retrieve the updated state from the database
     state = await States.findOne({ stateCode: code }).exec();
 
-    res.status(201).json({ stateCode: state.stateCode, funfacts: state.funfacts });
+    res.status(201).json({ state: stateName.state, _id: state._id, stateCode: state.stateCode, funfacts: state.funfacts });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Server error' });
